@@ -1,5 +1,5 @@
 # Wordle solver
-Le contenu rédigé en français se trouve [ici](./content)
+Le contenu rédigé en français se trouve [ici](./content.md)
 
 migrated from Python 3.10.4 to Java 17
 
