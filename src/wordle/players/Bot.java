@@ -138,9 +138,11 @@ public class Bot extends Player {
         Map<Character, Integer> freq = new HashMap<>();
         Set<Character> misplaceds = new HashSet<>();
 
+        // Create a frequency map, update constraints, and store misplaced letters
         for (int i = 0; i < results.length; i++) {
             final char ch = word.charAt(i);
             switch (results[i]) {
+                // For correct letters, lock the possibility to the current letter
                 case CORRECT:
                     Set<Character> locked = new HashSet<>();
                     locked.add(ch);
@@ -148,12 +150,14 @@ public class Bot extends Player {
                     freq.put(ch, freq.getOrDefault(ch, 0) + 1);
                     break;
 
+                // For misplaced letters, remove the possibility and mark the letter as misplaced, for further verification
                 case MISPLACED:
                     constraints[i].remove(ch);
                     freq.put(ch, freq.getOrDefault(ch, 0) + 1);
                     misplaceds.add(ch);
                     break;
-
+                
+                // For incorrect letters, remove the letter from other possibilities in the same position
                 case INCORRECT:
                     for (int j = 0; j < constraints.length; j++) {
                         if (constraints[j].size() > 1) {
@@ -164,7 +168,7 @@ public class Bot extends Player {
             }
         }
 
-        // worst case: 5 misplaceds chars --> O(N²)
+        // correct constraints in case of misinterpretation of an incorrect or misplaced letter
         for (Character misplaced : misplaceds) {
             for (int i = 0; i < wordSize; i++) {
                 if (misplaced != word.charAt(i) && constraints[i].size() > 1) {
@@ -173,6 +177,7 @@ public class Bot extends Player {
             }
         }
 
+        // Filter possibilities, keeping only words that match constraints
         int size = possibilities.length;
         int newSize = 0;
         String[] matching = new String[size];
@@ -185,16 +190,18 @@ public class Bot extends Player {
                 }
             }
 
-            // break outer loop
+            // Break out of the outer loop if there is no match
             if (!match)
                 continue;
 
+            // Create a frequency map for the current possibility
             Map<Character, Integer> wordFreq = new HashMap<>();
             for (int j = 0; j < wordSize; j++) {
                 final char ch = possibilities[i].charAt(j);
                 wordFreq.put(ch, wordFreq.getOrDefault(ch, 0) + 1);
             }
 
+            // Check if the frequency of each letter in the current possibility is within the constraints
             for (Map.Entry<Character, Integer> entry : freq.entrySet()) {
                 Character letter = entry.getKey();
                 Integer occurences = entry.getValue();
@@ -204,12 +211,14 @@ public class Bot extends Player {
                 }
             }
 
+            // Break out of the outer loop if there is no match
             if (!match)
                 continue;
 
             matching[newSize++] = possibilities[i];
         }
 
+        // Update the possibilities array with only the matching words
         possibilities = new String[newSize];
         for (int i = 0; i < newSize; i++) {
             possibilities[i] = matching[i];
