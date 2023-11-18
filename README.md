@@ -1,4 +1,5 @@
 # Wordle solver
+Le contenu rédigé en français se trouve [ici](./content)
 
 migrated from Python 3.10.4 to Java 17
 
